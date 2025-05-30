@@ -22,6 +22,9 @@ public class Product {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Column(name = "quantity")
+    private Integer quantity;
+
     public Integer getId() {
         return id;
     }
@@ -60,5 +63,13 @@ public class Product {
 
     public void setUnity(String unity) {
         this.unity = unity;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }

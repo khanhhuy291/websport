@@ -4,22 +4,19 @@ import com.example.websport.model.BookedCourt;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDate;
 import java.util.List;
 
-public interface BookedCourtRepository
-        extends JpaRepository<BookedCourt, Integer>, PagingAndSortingRepository<BookedCourt, Integer> {
-    Page<BookedCourt> findAll(Pageable pageable);
+public interface BookedCourtRepository extends JpaRepository<BookedCourt, Integer> {
+    // Có thể thêm các hàm tìm kiếm tuỳ ý nếu cần
+    List<BookedCourt> findByBookedDate(LocalDate bookedDate);
 
-    Page<BookedCourt> findByBookingId(Integer bookingId, Pageable pageable);
+    @Query("SELECT b FROM BookedCourt b WHERE MONTH(b.bookedDate) = :month AND DAY(b.bookedDate) = :day")
+    List<BookedCourt> findByMonthAndDay(@Param("month") int month, @Param("day") int day);
 
-    List<BookedCourt> findByBookingId(Integer bookingId);
-
-    Page<BookedCourt> findByChildCourtId(Integer childCourtId, Pageable pageable);
-
-    List<BookedCourt> findByChildCourtId(Integer childCourtId);
-
-    Page<BookedCourt> findByBookingIdAndChildCourtId(Integer bookingId, Integer childCourtId, Pageable pageable);
-
-    List<BookedCourt> findByBookingIdAndChildCourtId(Integer bookingId, Integer childCourtId);
+    @Query("SELECT b FROM BookedCourt b WHERE b.customerId = :customerId")
+    Page<BookedCourt> findByCustomerId(@Param("customerId") int customerId, Pageable pageable);
 }

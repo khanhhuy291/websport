@@ -2,10 +2,21 @@ package com.example.websport.controller;
 
 import com.example.websport.model.BookedCourt;
 import com.example.websport.service.BookedCourtService;
+import com.example.websport.service.UserService;
+
+import com.example.websport.model.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/booked-courts")
@@ -15,62 +26,79 @@ public class BookedCourtController {
     @Autowired
     private BookedCourtService bookedCourtService;
 
+    @Autowired
+    private UserService userService;
+
+    // Lấy danh sách có phân trang
     @GetMapping
-    public Page<BookedCourt> getBookedCourts(
-            @RequestParam(required = false) Integer id,
-            @RequestParam(required = false) Integer bookingId,
-            @RequestParam(required = false) Integer childCourtId,
-            Pageable pageable) {
-
-        if (id != null) {
-            return bookedCourtService.getBookedCourtById(id)
-                    .map(court -> new org.springframework.data.domain.PageImpl<>(
-                            java.util.Collections.singletonList(court),
-                            pageable,
-                            1))
-                    .orElse(new org.springframework.data.domain.PageImpl<>(
-                            java.util.Collections.emptyList()));
-        }
-
-        if (bookingId != null && childCourtId != null) {
-            return bookedCourtService.getBookedCourtsByBookingIdAndChildCourtId(
-                    bookingId, childCourtId, pageable);
-        }
-
-        if (bookingId != null) {
-            return bookedCourtService.getBookedCourtsByBookingId(bookingId, pageable);
-        }
-
-        if (childCourtId != null) {
-            return bookedCourtService.getBookedCourtsByChildCourtId(childCourtId, pageable);
-        }
-
-        return bookedCourtService.getAllBookedCourts(pageable);
+    public Page<BookedCourt> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("bookedDate", "startDate", "endDate").descending());
+        return bookedCourtService.getAll(pageable);
     }
 
+    @GetMapping("/customerId")
+    public Page<BookedCourt> getBookedCourtsByCustomerId(
+            @RequestParam int customerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("bookedDate", "startDate", "endDate").descending());
+        return bookedCourtService.getBookedCourtsByCustomerId(customerId, pageable);
+    }
+
+    // Lấy theo id
+    @GetMapping("/{id}")
+    public BookedCourt getById(@PathVariable Integer id) {
+        return bookedCourtService.getById(id);
+    }
+
+    // Tạo mới
     @PostMapping
-    public BookedCourt createBookedCourt(@RequestBody BookedCourt bookedCourt) {
-        return bookedCourtService.createBookedCourt(bookedCourt);
+    public BookedCourt create(@RequestBody BookedCourt bookedCourt) {
+        return bookedCourtService.create(bookedCourt);
     }
 
+    // Sửa
     @PutMapping("/{id}")
-    public BookedCourt updateBookedCourt(@PathVariable Integer id, @RequestBody BookedCourt updatedBookedCourt) {
-        return bookedCourtService.getBookedCourtById(id)
-                .map(existingBookedCourt -> {
-                    existingBookedCourt.setStartDatetime(updatedBookedCourt.getStartDatetime());
-                    existingBookedCourt.setEndDatetime(updatedBookedCourt.getEndDatetime());
-                    existingBookedCourt.setPrice(updatedBookedCourt.getPrice());
-                    existingBookedCourt.setIsCheckin(updatedBookedCourt.getIsCheckin());
-                    existingBookedCourt.setSelloff(updatedBookedCourt.getSelloff());
-                    existingBookedCourt.setBookingId(updatedBookedCourt.getBookingId());
-                    existingBookedCourt.setChildCourtId(updatedBookedCourt.getChildCourtId());
-                    return bookedCourtService.createBookedCourt(existingBookedCourt);
-                })
-                .orElseThrow(() -> new RuntimeException("BookedCourt not found with id: " + id));
+    public BookedCourt update(@PathVariable Integer id, @RequestBody BookedCourt bookedCourt) {
+        return bookedCourtService.update(id, bookedCourt);
     }
 
+    // Xoá
     @DeleteMapping("/{id}")
-    public void deleteBookedCourt(@PathVariable Integer id) {
-        bookedCourtService.deleteBookedCourt(id);
+    public void delete(@PathVariable Integer id) {
+        bookedCourtService.delete(id);
+    }
+
+    @GetMapping("/by-date")
+    public List<BookedCourt> getBookedCourtsByDate(@RequestParam("date") String dateString) {
+        LocalDate date = LocalDate.parse(dateString); // Assuming dateString is in YYYY-MM-DD format
+        // Sorting should ideally be handled in the service layer when fetching the data
+        return bookedCourtService.getBookedCourtsByDate(date);
+    }
+
+    // Tìm kiếm bookedCourt theo Tháng và Ngày
+    @GetMapping("/by-month-day")
+    public List<BookedCourt> getBookedCourtsByMonthAndDay(
+            @RequestParam("month") int month,
+            @RequestParam("day") int day) {
+        // Sorting should ideally be handled in the service layer when fetching the data
+        return bookedCourtService.getBookedCourtsByMonthAndDay(month, day);
+    }
+
+    // API to get user name by userId
+    @GetMapping("/user/{userId}/name")
+    public ResponseEntity<String> getUserName(@PathVariable Integer userId) {
+        try {
+            User user = userService.getUserById(userId);
+            if (user != null) {
+                return ResponseEntity.ok(user.getFullName());
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error retrieving user name");
+        }
     }
 }

@@ -1,7 +1,6 @@
 package com.example.websport.model;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "UsedProduct")
@@ -10,22 +9,16 @@ public class UsedProduct {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "quantity", nullable = false)
+    @Column(nullable = false)
     private Integer quantity;
 
-    @Column(name = "price", nullable = false)
-    private BigDecimal price;
+    @Column(nullable = false)
+    private Integer bookedCourtId;
 
-    @Column(name = "selloff", nullable = false)
-    private BigDecimal selloff;
-
-    @Column(name = "bookedCourtID", nullable = false)
-    private Integer bookedCourtID;
-
-    @Column(name = "productId", nullable = false)
+    @Column(nullable = false)
     private Integer productId;
 
-    // Getters and Setters
+    // Getters & Setters
     public Integer getId() {
         return id;
     }
@@ -42,28 +35,12 @@ public class UsedProduct {
         this.quantity = quantity;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public Integer getBookedCourtId() {
+        return bookedCourtId;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public BigDecimal getSelloff() {
-        return selloff;
-    }
-
-    public void setSelloff(BigDecimal selloff) {
-        this.selloff = selloff;
-    }
-
-    public Integer getBookedCourtID() {
-        return bookedCourtID;
-    }
-
-    public void setBookedCourtID(Integer bookedCourtID) {
-        this.bookedCourtID = bookedCourtID;
+    public void setBookedCourtId(Integer bookedCourtId) {
+        this.bookedCourtId = bookedCourtId;
     }
 
     public Integer getProductId() {

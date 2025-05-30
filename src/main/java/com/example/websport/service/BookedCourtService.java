@@ -7,58 +7,77 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookedCourtService {
-
     @Autowired
     private BookedCourtRepository bookedCourtRepository;
 
-    public List<BookedCourt> getAllBookedCourts() {
-        return bookedCourtRepository.findAll();
-    }
-
-    public Page<BookedCourt> getAllBookedCourts(Pageable pageable) {
+    public Page<BookedCourt> getAll(Pageable pageable) {
         return bookedCourtRepository.findAll(pageable);
     }
 
-    public Optional<BookedCourt> getBookedCourtById(Integer id) {
-        return bookedCourtRepository.findById(id);
+    public BookedCourt getById(Integer id) {
+        return bookedCourtRepository.findById(id).orElse(null);
     }
 
-    public List<BookedCourt> getBookedCourtsByBookingId(Integer bookingId) {
-        return bookedCourtRepository.findByBookingId(bookingId);
-    }
-
-    public Page<BookedCourt> getBookedCourtsByBookingId(Integer bookingId, Pageable pageable) {
-        return bookedCourtRepository.findByBookingId(bookingId, pageable);
-    }
-
-    public List<BookedCourt> getBookedCourtsByChildCourtId(Integer childCourtId) {
-        return bookedCourtRepository.findByChildCourtId(childCourtId);
-    }
-
-    public Page<BookedCourt> getBookedCourtsByChildCourtId(Integer childCourtId, Pageable pageable) {
-        return bookedCourtRepository.findByChildCourtId(childCourtId, pageable);
-    }
-
-    public List<BookedCourt> getBookedCourtsByBookingIdAndChildCourtId(Integer bookingId, Integer childCourtId) {
-        return bookedCourtRepository.findByBookingIdAndChildCourtId(bookingId, childCourtId);
-    }
-
-    public Page<BookedCourt> getBookedCourtsByBookingIdAndChildCourtId(Integer bookingId, Integer childCourtId,
-            Pageable pageable) {
-        return bookedCourtRepository.findByBookingIdAndChildCourtId(bookingId, childCourtId, pageable);
-    }
-
-    public BookedCourt createBookedCourt(BookedCourt bookedCourt) {
-        bookedCourt.setId(null);
+    public BookedCourt create(BookedCourt bookedCourt) {
         return bookedCourtRepository.save(bookedCourt);
     }
 
-    public void deleteBookedCourt(Integer id) {
+    public Page<BookedCourt> getBookedCourtsByCustomerId(int customerId, Pageable pageable) {
+        return bookedCourtRepository.findByCustomerId(customerId, pageable);
+    }
+
+    public BookedCourt update(Integer id, BookedCourt bookedCourtDetails) {
+        BookedCourt existingBookedCourt = bookedCourtRepository.findById(id).orElse(null);
+        if (existingBookedCourt == null) {
+            return null; // Or throw an exception
+        }
+
+        // Update only non-null fields from bookedCourtDetails
+        if (bookedCourtDetails.getCourtId() != null) {
+            existingBookedCourt.setCourtId(bookedCourtDetails.getCourtId());
+        }
+        if (bookedCourtDetails.getUserId() != null) {
+            existingBookedCourt.setUserId(bookedCourtDetails.getUserId());
+        }
+        if (bookedCourtDetails.getCustomerId() != null) {
+            existingBookedCourt.setCustomerId(bookedCourtDetails.getCustomerId());
+        }
+        if (bookedCourtDetails.getBookedDate() != null) {
+            existingBookedCourt.setBookedDate(bookedCourtDetails.getBookedDate());
+        }
+        if (bookedCourtDetails.getStartDate() != null) {
+            existingBookedCourt.setStartDate(bookedCourtDetails.getStartDate());
+        }
+        if (bookedCourtDetails.getEndDate() != null) {
+            existingBookedCourt.setEndDate(bookedCourtDetails.getEndDate());
+        }
+        if (bookedCourtDetails.getStatus() != null) {
+            existingBookedCourt.setStatus(bookedCourtDetails.getStatus());
+        }
+        if (bookedCourtDetails.getIsCheckin() != null) {
+            existingBookedCourt.setIsCheckin(bookedCourtDetails.getIsCheckin());
+        }
+        if (bookedCourtDetails.getNote() != null) {
+            existingBookedCourt.setNote(bookedCourtDetails.getNote());
+        }
+
+        return bookedCourtRepository.save(existingBookedCourt);
+    }
+
+    public void delete(Integer id) {
         bookedCourtRepository.deleteById(id);
+    }
+
+    public List<BookedCourt> getBookedCourtsByDate(LocalDate date) {
+        return bookedCourtRepository.findByBookedDate(date);
+    }
+
+    public List<BookedCourt> getBookedCourtsByMonthAndDay(int month, int day) {
+        return bookedCourtRepository.findByMonthAndDay(month, day);
     }
 }

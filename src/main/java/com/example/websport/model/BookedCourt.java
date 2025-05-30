@@ -1,40 +1,38 @@
 package com.example.websport.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "BookedCourt")
-@NoArgsConstructor
-@AllArgsConstructor
 public class BookedCourt {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "start_datetime", nullable = false)
-    private LocalDateTime startDatetime;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate bookedDate;
+    @JsonFormat(pattern = "HH:mm:ss")
+    private LocalTime startDate;
+    @JsonFormat(pattern = "HH:mm:ss")
+    private LocalTime endDate;
 
-    @Column(name = "end_datetime", nullable = false)
-    private LocalDateTime endDatetime;
+    private Integer userId;
+    private Integer customerId;
+    private Integer courtId;
 
-    @Column(name = "price", nullable = false)
-    private Double price;
+    @Column(name = "status")
+    private Boolean status = false; // mặc định
 
-    @Column(name = "isCheckin")
-    private Boolean isCheckin = false;
+    @Column(name = "is_checkin")
+    private Boolean isCheckin = false; // mặc định
 
-    @Column(name = "selloff")
-    private Double selloff;
+    @Column(name = "note")
+    private String note;
 
-    @Column(name = "BookingID", nullable = false)
-    private Integer bookingId;
-
-    @Column(name = "ChildCourtID", nullable = false)
-    private Integer childCourtId;
-
+    // Getters & Setters
     public Integer getId() {
         return id;
     }
@@ -43,60 +41,76 @@ public class BookedCourt {
         this.id = id;
     }
 
-    public LocalDateTime getStartDatetime() {
-        return startDatetime;
+    public LocalDate getBookedDate() {
+        return bookedDate;
     }
 
-    public LocalDateTime getEndDatetime() {
-        return endDatetime;
+    public void setBookedDate(LocalDate bookedDate) {
+        this.bookedDate = bookedDate;
     }
 
-    public Double getPrice() {
-        return price;
+    public LocalTime getStartDate() {
+        return startDate;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setStartDate(LocalTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalTime endDate) {
+        this.endDate = endDate;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
+    }
+
+    public Integer getCourtId() {
+        return courtId;
+    }
+
+    public void setCourtId(Integer courtId) {
+        this.courtId = courtId;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
     }
 
     public Boolean getIsCheckin() {
         return isCheckin;
     }
 
-    public void setIsCheckin(Boolean checkin) {
-        isCheckin = checkin;
+    public void setIsCheckin(Boolean isCheckin) {
+        this.isCheckin = isCheckin;
     }
 
-    public Double getSelloff() {
-        return selloff;
+    public String getNote() {
+        return note;
     }
 
-    public void setSelloff(Double selloff) {
-        this.selloff = selloff;
-    }
-
-    public Integer getBookingId() {
-        return bookingId;
-    }
-
-    public void setBookingId(Integer bookingId) {
-        this.bookingId = bookingId;
-    }
-
-    public Integer getChildCourtId() {
-        return childCourtId;
-    }
-
-    public void setChildCourtId(Integer childCourtId) {
-        this.childCourtId = childCourtId;
-    }
-
-    public void setStartDatetime(LocalDateTime startDatetime) {
-        this.startDatetime = startDatetime;
-    }
-
-    public void setEndDatetime(LocalDateTime endDatetime) {
-        this.endDatetime = endDatetime;
+    public void setNote(String note) {
+        this.note = note;
     }
 
 }

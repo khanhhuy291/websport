@@ -1,56 +1,59 @@
 package com.example.websport.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(name = "bill")
-
+@Table(name = "Bill")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Bill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column(name = "paymentDate")
-    private LocalDate paymentDate;
+    @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime paymentDate;
 
-    @Column(name = "amount")
-    private Double amount;
-
-    @Column(name = "paymentType")
+    @Column(nullable = false, length = 50)
     private String paymentType;
 
-    @Column(name = "note")
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal total;
+
+    @Column(columnDefinition = "TEXT")
     private String note;
 
-    @Column(name = "bookingID")
-    private Integer bookingID;
+    @Column(name = "bookedCourtId", nullable = false)
+    private Integer bookedCourtId;
 
-    @Column(name = "userID")
-    private Integer userID;
+    @Column(name = "userId", nullable = false)
+    private Integer userId;
+    @Column(name = "customerId", nullable = false)
+    private Integer customerId;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public LocalDate getPaymentDate() {
+    public LocalDateTime getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(LocalDate localDate) {
-        this.paymentDate = localDate;
-    }
-
-    public Double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
+    public void setPaymentDate(LocalDateTime paymentDate) {
+        this.paymentDate = paymentDate;
     }
 
     public String getPaymentType() {
@@ -61,6 +64,14 @@ public class Bill {
         this.paymentType = paymentType;
     }
 
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public void setTotal(BigDecimal total) {
+        this.total = total;
+    }
+
     public String getNote() {
         return note;
     }
@@ -69,19 +80,27 @@ public class Bill {
         this.note = note;
     }
 
-    public Integer getBookingID() {
-        return bookingID;
+    public Integer getBookedCourtId() {
+        return bookedCourtId;
     }
 
-    public void setBookingID(Integer bookingID) {
-        this.bookingID = bookingID;
+    public void setBookedCourtId(Integer bookedCourtId) {
+        this.bookedCourtId = bookedCourtId;
     }
 
-    public Integer getUserID() {
-        return userID;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setUserID(Integer userID) {
-        this.userID = userID;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
 }

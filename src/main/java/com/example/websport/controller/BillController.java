@@ -3,67 +3,86 @@ package com.example.websport.controller;
 import com.example.websport.model.Bill;
 import com.example.websport.service.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.web.bind.annotation.RequestParam;
-import java.util.Collections;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/bills")
 @CrossOrigin(origins = "*")
-
 public class BillController {
+
     @Autowired
     private BillService billService;
 
     @GetMapping
-    public Page<Bill> getBills(
+    public ResponseEntity<Page<Bill>> getAllBills(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) Integer id,
-            @RequestParam(required = false) Integer userId,
-            @RequestParam(required = false) Integer bookingId) {
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity
+                .ok(billService.getAllBills(PageRequest.of(page, size, Sort.by("paymentDate").descending())));
+    }
 
-        Pageable pageable = PageRequest.of(page, size);
+    @GetMapping("/{id}")
+    public ResponseEntity<Bill> getBillById(@PathVariable Long id) {
+        return ResponseEntity.ok(billService.getBillById(id));
+    }
 
-        if (id != null) {
-            return new PageImpl<>(Collections.singletonList(billService.getBillById(id)), pageable, 1);
-        }
+    @GetMapping("/by-year")
+    public ResponseEntity<Page<Bill>> getBillsByYear(
+            @RequestParam int year,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("paymentDate").descending());
+        return ResponseEntity.ok(billService.getBillsByYear(year, pageable));
+    }
 
-        if (userId != null) {
-            return billService.getBillByUserId(userId, pageable);
-        }
+    @GetMapping("/by-month-year")
+    public ResponseEntity<Page<Bill>> getBillsByMonthAndYear(
+            @RequestParam int month,
+            @RequestParam int year,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("paymentDate").descending());
+        return ResponseEntity.ok(billService.getBillsByMonthAndYear(month, year, pageable));
+    }
 
-        if (bookingId != null) {
-            return billService.getBillByBookingId(bookingId, pageable);
-        }
+    @GetMapping("/by-day-month-year")
+    public ResponseEntity<Page<Bill>> getBillsByDayMonthAndYear(
+            @RequestParam int day,
+            @RequestParam int month,
+            @RequestParam int year,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("paymentDate").descending());
+        return ResponseEntity.ok(billService.getBillsByDayMonthAndYear(day, month, year, pageable));
+    }
 
-        return billService.getAllBills(pageable);
+    @GetMapping("/by-customer-id")
+    public ResponseEntity<Page<Bill>> getBillsByCustomerId(
+            @RequestParam int customerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("paymentDate").descending());
+        return ResponseEntity.ok(billService.getBillsByCustomerId(customerId, pageable));
     }
 
     @PostMapping
-    public Bill createBill(@RequestBody Bill bill) {
-        return billService.createBill(bill);
+    public ResponseEntity<Bill> createBill(@RequestBody Bill bill) {
+        return ResponseEntity.ok(billService.createBill(bill));
     }
 
     @PutMapping("/{id}")
-    public Bill updateBill(@PathVariable Integer id, @RequestBody Bill bill) {
-        return billService.updateBill(id, bill);
+    public ResponseEntity<Bill> updateBill(@PathVariable Long id, @RequestBody Bill bill) {
+        return ResponseEntity.ok(billService.updateBill(id, bill));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBill(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteBill(@PathVariable Long id) {
         billService.deleteBill(id);
+        return ResponseEntity.ok().build();
     }
-
 }
